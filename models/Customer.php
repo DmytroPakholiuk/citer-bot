@@ -26,7 +26,8 @@ class Customer extends \yii\db\ActiveRecord
     {
         return [
             [['telegram_user_id', 'status'], 'integer'],
-            [['username'], 'string']
+            [['username'], 'string'],
+            [['telegram_user_id'], 'required']
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use aki\telegram\Telegram;
+use app\models\CommandParser;
 use app\models\Customer;
 use app\models\Message;
 
@@ -26,7 +27,9 @@ class BotController extends \yii\console\Controller
          * @var Telegram $telegram
          */
         $telegram = \Yii::$app->get('telegram');
+
         $updates = $telegram->getUpdates();
+        $commandParser = new CommandParser();
 
         foreach ($updates['result'] as $update) {
             $from = $update['message']['from'];
@@ -40,26 +43,28 @@ class BotController extends \yii\console\Controller
             $customer->username = $from['username'] ?? null;
             $customer->save();
 
+            $message = Message::find()->where(['telegram_message_id' => $update['message']['message_id']])
+                ->andWhere(['customer_id' => $customer->id])->one();
+            if (is_null($message)){
+                $message = new Message();
+                $message->customer_id = $customer->id;
+                $message->customer_status = $customer->status;
+                $message->type = isset($update['message']['text']) ? 'text' : 'other';
+                $message->text = $update['message']['text'] ?? null;
+                $message->telegram_message_id = $update['message']['message_id'];
+                $message->telegram_date_sent = $update['message']['date'];
+                $message->save();
 
-            if (isset($update['message']['text'])){
-                $text = $update['message']['text'];
-                if (strpos($text, '/') === 0){
-                    switch ($text){
-                        case '/cite':
-                            break;
-                        default:
-                            $customer->status = Customer::STATUS_IDLE;
-                            $customer->save();
-                            $telegram->sendMessage([
-                                'text' => 'Incorrect command.',
-                                'chat_id' => $customer->telegram_user_id
-                            ]);
+
+                if (isset($update['message']['text'])){
+                    $text = $update['message']['text'];
+                    if (strpos($text, '/') === 0){
+                        $commandParser->parseCommand($text, $customer, $telegram);
+                        continue;
                     }
+                    $commandParser->parseTextContent($text, $customer, $telegram);
                 }
             }
-
-
-
         }
     }
 }

@@ -14,9 +14,9 @@ class m230621_205251_create_message_customer_FK extends Migration
     {
         $this->addForeignKey(
             'message-customer',
-            'message',
+            'messages',
             'customer_id',
-            'customer',
+            'customers',
             'id'
         );
     }
@@ -26,7 +26,7 @@ class m230621_205251_create_message_customer_FK extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('message-customer', 'message');
+        $this->dropForeignKey('message-customer', 'messages');
 
         return false;
     }
