@@ -6,6 +6,7 @@ use aki\telegram\Telegram;
 use app\models\CommandParser;
 use app\models\Customer;
 use app\models\Message;
+use Telegram\Bot\Api;
 
 class BotController extends \yii\console\Controller
 {
@@ -30,6 +31,8 @@ class BotController extends \yii\console\Controller
 
         $updates = $telegram->getUpdates();
         $commandParser = new CommandParser();
+
+//        var_dump($updates); die();
 
         foreach ($updates['result'] as $update) {
             $from = $update['message']['from'];

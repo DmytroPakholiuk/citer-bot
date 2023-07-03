@@ -18,6 +18,16 @@ class ProfessorImage extends ActiveRecord
         return 'professor_image';
     }
 
+    public static function baseImagePath()
+    {
+        return \Yii::$app->params['profImageDir'];
+    }
+
+    public function getFilePath(): string
+    {
+        return self::baseImagePath() . "/" . $this->path ;
+    }
+
     public function rules()
     {
         return [

@@ -45,14 +45,15 @@ class Professor extends \yii\db\ActiveRecord
 
     }
 
-    public function getFullName()
+    public function getFullName(): string
     {
         return $this->last_name . " " . $this->first_name . " " . $this->father_name;
     }
 
-    public function getInitials()
+    public function getInitials(): string
     {
-
+        return $this->last_name . " " . substr($this->first_name, 0, 2)
+            . ". " . substr($this->father_name, 0, 2) . ".";
     }
 
     public function getMainImage()
